@@ -21,10 +21,10 @@ const modName = 'app.components.chart';
 
 class ChartController {
   constructor() {
-    const boxWidth = 12,
-      boxHeight = 12,
+    const boxWidth = 16,
+      boxHeight = 16,
       numCol = 64,
-      numRow = 64,
+      numRow = 40,
       matrix = new Array(numCol);
 
     for (let i = 0; i < numCol; ++i) {
