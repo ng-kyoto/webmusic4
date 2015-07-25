@@ -13,25 +13,58 @@ const initGL = ($window) => {
   const height = wrapper.clientHeight;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+  const light = new THREE.PointLight( 0x404040, 3, 1000 );
+  light.position.z = 3;
 
   const renderer = new THREE.WebGLRenderer();
 
   renderer.setSize(width, height);
   wrapper.appendChild(renderer.domElement);
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-  const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  //const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const geometry = new THREE.IcosahedronGeometry(1,1);
+  //const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+  const material = new THREE.MeshLambertMaterial( {
+                        color: new THREE.Color( Math.random(), Math.random() * 0.5, Math.random() ),
+                        blending: THREE.AdditiveBlending,
+                        depthTest: false,
+                        shading: THREE.FlatShading,
+                        transparent: true
+                    } );
+
+
+  // columns
+  const numCol = 64;
+  const group = new THREE.Group();
+  for (var ii = 0; ii < numCol; ++ii) {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.y = 1 * ii;
+    mesh.position.x = -1;
+    mesh.position.z = -5;
+    group.add(mesh);
+  }
+  scene.add(group);
+  //const groupColumns[] = new Array[numColumns];
+  /*for (const i = 0; i < numColumns; ++i) {
+    groupColumns[i] = new THREE.Group();
+  }*/
+
+  //scene.add(cube);
+  scene.add(light);
 
   camera.position.z = 5;
 
   const render = () => {
     $window.requestAnimationFrame(render);
 
-    cube.rotation.x += 0.1;
-    cube.rotation.y += 0.1;
+    //cube.rotation.x += 0.1;
+    //cube.rotation.y += 0.1;
+
+    light.color.setHex(0xffffff );
+    light.position.x = Math.random() * 800 - 400;
+    light.position.y = Math.random() * 800 - 400;
+    light.position.z = Math.random() * 800 - 400;
 
     renderer.render(scene, camera);
   };
