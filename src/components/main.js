@@ -1,4 +1,5 @@
 import angular from 'angular';
+import Firebase from 'firebase';
 
 const template = `
 <div>
@@ -17,27 +18,18 @@ const template = `
   </div>
 
   <visualizer style="position: absolute; left: 0; top: 0; right: 0; height: 500px;"></visualizer>
-  <grid grid="main.grid" style="position: absolute; left: 100px; top: 500px; right: 0; bottom: 0;"></grid>
+  <grid grid="main.grid" style="position: absolute; left: 100px; top: 500px; right: 0; bottom: 10px;"></grid>
 </div>
 `;
 
 class MainController {
-  constructor($scope, $window, numRow, numCol) {
+  constructor($scope, $window, numRow, numCol, grid) {
     this.$scope = $scope;
     this.$window = $window;
     this.numRow = numRow;
     this.numCol = numCol;
     this.playing = false;
-    this.grid = new Array(numCol);
-
-    for (let i = 0; i < numCol; ++i) {
-      this.grid[i] = new Array(numRow);
-      for (let j = 0; j < numRow; ++j) {
-        this.grid[i][j] = {
-          mask: Math.random() < 0.1 ? 1 : 0
-        };
-      }
-    }
+    this.grid = grid;
   }
 
   play() {
@@ -101,7 +93,13 @@ angular.module(modName, [])
   $routeProvider.when('/', {
     template: template,
     controller: 'MainController',
-    controllerAs: 'main'
+    controllerAs: 'main',
+    resolve: {
+      grid: ($firebaseArray) => {
+        const ref = new Firebase('https://ngkyoto-wm4.firebaseio.com/hoge');
+        return $firebaseArray(ref).$loaded();
+      }
+    }
   });
 });
 
