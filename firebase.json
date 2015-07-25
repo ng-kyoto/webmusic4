@@ -1,0 +1,9 @@
+{
+  "firebase": "ngkyoto-wm4",
+  "public": "app",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
