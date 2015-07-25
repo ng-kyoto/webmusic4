@@ -1,5 +1,5 @@
 import angular from 'angular';
-import Converter from '../converter';
+import Converter from '../vendor/conv';
 
 const modName = 'app.services.midi';
 
