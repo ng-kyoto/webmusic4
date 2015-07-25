@@ -14,10 +14,7 @@ class Midi {
   }
 
   onMIDISuccess(access) {
-    var midi = access;
-
-    console.log(midi);
-    this.inputs = midi.inputs();
+    console.log(access);
   }
 
   onMIDIFailure(msg) {
