@@ -17,9 +17,9 @@ class GridController {
     const boxWidth = 16,
       boxHeight = 16;
 
-    const svg = d3.select('#grid');
-    svg.select('.contents')
-      .selectAll('g.col')
+    const svg = d3.select('#grid'),
+      contents = svg.select('.contents');
+    contents.selectAll('g.col')
       .data(this.grid)
       .enter()
       .append('g')
@@ -41,18 +41,31 @@ class GridController {
         height: boxHeight - 2,
         transform: (_, j) => `translate(0,${boxHeight * j})`
       });
+    contents.append('g')
+      .classed('cursor', true)
+      .append('line')
+      .attr({
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: boxHeight * numRow,
+        stroke: 'green',
+        'stroke-width': 3
+      });
+
+    this.svg = svg;
+    const xScale = d3.scale.linear()
+      .domain([0, numCol * 125])
+      .range([0, numCol * boxWidth]);
 
     $scope.$on('tick', (e, time) => {
-      console.log(time);
       const index = Math.floor(time / 125);
-      d3.selectAll('g.col')
+      this.svg.selectAll('g.col')
         .attr('opacity', 1)
         .filter((_, i) => i === index)
         .attr('opacity', 0.5);
-    });
-
-    $scope.$on('note-on', (e, data) => {
-      console.log(data);
+      this.svg.select('g.cursor')
+        .attr('transform', `translate(${xScale(time)},0)`);
     });
   }
 }

@@ -22,11 +22,12 @@ const template = `
 `;
 
 class MainController {
-  constructor($scope, $interval, numRow, numCol) {
+  constructor($scope, $window, numRow, numCol) {
     this.$scope = $scope;
-    this.$interval = $interval;
+    this.$window = $window;
     this.numRow = numRow;
     this.numCol = numCol;
+    this.playing = false;
     this.grid = new Array(numCol);
 
     for (let i = 0; i < numCol; ++i) {
@@ -40,11 +41,21 @@ class MainController {
   }
 
   play() {
-    const startTime = new Date();
-    this.$interval(() => {
-      const now = new Date();
-      this.$scope.$broadcast('tick', now - startTime);
-    }, 125, this.numCol, false);
+    if (!this.playing) {
+      this.playing = true;
+      const startTime = new Date();
+      const tick = () => {
+        const now = new Date(),
+          delta = now - startTime;
+        if (delta < 125 * this.numCol) {
+          this.$window.requestAnimationFrame(tick);
+        } else {
+          this.playing = false;
+        }
+        this.$scope.$broadcast('tick', delta);
+      };
+      tick();
+    }
   }
 
   noteon() {
