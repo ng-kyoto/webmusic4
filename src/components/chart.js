@@ -14,10 +14,10 @@ const modName = 'app.components.chart';
 
 class ChartController {
   constructor() {
-    const boxWidth = 8,
-      boxHeight = 8,
-      numCol = 100,
-      numRow = 80,
+    const boxWidth = 12,
+      boxHeight = 12,
+      numCol = 64,
+      numRow = 64,
       matrix = new Array(numCol);
 
     for (let i = 0; i < numCol; ++i) {
