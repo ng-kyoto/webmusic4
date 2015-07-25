@@ -3,17 +3,9 @@ import Firebase from 'firebase';
 
 const template = `
 <div>
-  <div style="position: absolute; left: 10px; bottom: 10px;">
+  <div style="position: absolute; left: 10px; top: 500px;">
     <md-button class="md-fab" ng-click="main.togglePlay()">
       <md-icon>play_arrow</md-icon>
-    </md-button>
-  </div>
-  <div style="position: absolute; left: 10px; top: 500px;">
-    <md-button class="md-fab" ng-click="main.noteon()">
-      <md-icon>add</md-icon>
-    </md-button>
-    <md-button class="md-fab" ng-click="main.noteoff()">
-      <md-icon>remove</md-icon>
     </md-button>
     <md-button class="md-fab" ng-click="main.setScale('major')">
       <p>1</p>
@@ -23,8 +15,8 @@ const template = `
     </md-button>
   </div>
 
-  <visualizer style="position: absolute; left: 0; top: 0; right: 0; height: 500px;"></visualizer>
-  <grid grid="main.grid" style="position: absolute; left: 100px; top: 500px; right: 0; bottom: 10px;"></grid>
+  <visualizer style="position: absolute; left: 0; top: 0; height: 500px; width: 500px;"></visualizer>
+  <grid grid="main.grid" style="position: absolute; left: 500px; top: 0; right: 0; bottom: 10px;"></grid>
 </div>
 `;
 
@@ -40,11 +32,14 @@ class MainController {
 
     let colOffset = 0;
     midi.addHandler(({rowIndex, velocity, channel}) => {
-      console.log(colOffset, rowIndex, grid[colOffset][rowIndex]);
       grid[colOffset][rowIndex].mask = !grid[colOffset][rowIndex].mask;
       grid[colOffset][rowIndex].channel = channel;
       grid[colOffset][rowIndex].velocity = velocity;
-      grid.$save(colOffset);
+      grid.$save(colOffset++);
+      $scope.$broadcast('grid-update');
+    });
+
+    grid.$watch(() => {
       $scope.$broadcast('grid-update');
     });
 
@@ -117,11 +112,11 @@ class MainController {
   addEventListener() {
     this.$scope.$on('note-on', (ev, arg) => {
       this.Player.noteon(arg.notes);
-    })
+    });
 
     this.$scope.$on('note-off', (ev, arg) => {
       this.Player.noteoff(arg.notes);
-    })
+    });
   }
 
   togglePlay() {

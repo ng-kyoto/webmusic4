@@ -80,8 +80,11 @@ class GridController {
     });
 
     $scope.$on('grid-update', () => {
+      console.log('hoge');
       this.svg.selectAll('g.cell rect')
-        .attr('fill', (d) => d.mask ? '#000' : '#ccc');
+        .attr('fill', (d) => {
+          return d.mask ? '#000' : '#ccc';
+        });
     });
   }
 }

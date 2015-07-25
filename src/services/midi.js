@@ -24,7 +24,7 @@ class Midi {
       this.inputs.push(o.value);
     }
     for (var cnt = 0; cnt < this.inputs.length; cnt++) {
-      this.inputs[cnt].onmidimessage = this.onMIDIEvent;
+      this.inputs[cnt].onmidimessage = this.onMIDIEvent.bind(this);
     }
   }
 
@@ -35,28 +35,29 @@ class Midi {
 
   onMIDIEvent(e) {
     const converter = new Converter('major');
-    const statusByte = e.data[0].toString(16).substring(0, 1);
+    const statusByte = +e.data[0].toString(16).substring(0, 1);
     let interval = 0;
 
-    if (statusByte === "8") {
+    console.log(statusByte, interval);
+    if (statusByte === 8) {
       interval = e.timeStamp - this.noteOnStamp;
       this.noteOnStamp = null;
       if (interval < 1000) {
         converter.setNoteNumber(e.data[1]);
-        this.status = {
+        this.handler({
           channel: Number(e.data[0].toString(16).substring(1)),
           velocity: e.data[2],
           rowIndex: converter.toRowIndex()
-        };
+        });
       }
     }
-    if (statusByte === "9") {
+    if (statusByte === 9) {
       this.noteOnStamp = e.timeStamp;
     }
   }
 
   addHandler(callback) {
-    this.handler = callback(this.status);
+    this.handler = callback;
   }
 }
 
