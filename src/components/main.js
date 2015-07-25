@@ -4,7 +4,7 @@ import Firebase from 'firebase';
 const template = `
 <div>
   <div style="position: absolute; left: 10px; bottom: 10px;">
-    <md-button class="md-fab" ng-click="main.play()">
+    <md-button class="md-fab" ng-click="main.togglePlay()">
       <md-icon>play_arrow</md-icon>
     </md-button>
   </div>
@@ -73,7 +73,7 @@ class MainController {
                 return {
                   rowIndex: j,
                   velocity: Math.floor(Math.random() * 128),
-                  channel: Math.floor(Math.random() * 16)
+                  channel: grid[i][j].channel
                 };
               })
           });
@@ -83,7 +83,8 @@ class MainController {
             colIndex: i,
             notes: exit.map((j) => {
                 return {
-                  rowIndex: j
+                  rowIndex: j,
+                  channel: grid[i - 1][j].channel
                 };
               })
           });
@@ -94,22 +95,23 @@ class MainController {
     });
   }
 
-  play() {
-    if (!this.playing) {
-      this.playing = true;
-      this.startTime = new Date();
-      const tick = () => {
-        const now = new Date(),
-          delta = now - this.startTime;
-        if (delta < 125 * this.numCol) {
-          this.$window.requestAnimationFrame(tick);
-        } else {
-          this.playing = false;
-        }
-        this.$scope.$broadcast('tick', delta);
-      };
-      tick();
+  togglePlay() {
+    if (this.playing) {
+      this.$window.cancelAnimationFrame(this.requestId);
     }
+    this.playing = true;
+    this.startTime = new Date();
+    const tick = () => {
+      const now = new Date(),
+        delta = now - this.startTime;
+      if (delta < 125 * this.numCol) {
+        this.requestId = this.$window.requestAnimationFrame(tick);
+      } else {
+        this.playing = false;
+      }
+      this.$scope.$broadcast('tick', delta);
+    };
+    tick();
   }
 
   noteon() {
