@@ -4,7 +4,7 @@ import d3 from 'd3';
 const template = `
 <div style="width: 100%; height: 100%">
   <svg id="grid" width="100%" height="100%">
-    <g class="contents">
+    <g class="contents" transform="translate(10,0)">
     </g>
   </svg>
 </div>
@@ -16,6 +16,10 @@ class GridController {
   constructor($scope, numCol, numRow) {
     const boxWidth = 16,
       boxHeight = 16;
+    const xScale = d3.scale.linear()
+      .domain([0, numCol * 125])
+      .range([0, numCol * boxWidth]);
+
 
     const svg = d3.select('#grid'),
       contents = svg.select('.contents');
@@ -41,23 +45,30 @@ class GridController {
         height: boxHeight - 2,
         transform: (_, j) => `translate(0,${boxHeight * j})`
       });
+
+    const drag = d3.behavior.drag()
+      .on('drag', function () {
+        const [x] = d3.mouse(contents.node());
+        d3.select(this)
+          .attr('transform', `translate(${x},0)`);
+        $scope.$emit('update-time', xScale.invert(x));
+      });
+
     contents.append('g')
       .classed('cursor', true)
+      .call(drag)
       .append('line')
+      .style('cursor', 'move')
       .attr({
         x1: 0,
         y1: 0,
         x2: 0,
         y2: boxHeight * numRow,
         stroke: 'green',
-        'stroke-width': 3
+        'stroke-width': 5
       });
 
     this.svg = svg;
-    const xScale = d3.scale.linear()
-      .domain([0, numCol * 125])
-      .range([0, numCol * boxWidth]);
-
     $scope.$on('tick', (e, time) => {
       const index = Math.floor(time / 125);
       this.svg.selectAll('g.col')

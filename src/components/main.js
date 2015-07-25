@@ -35,10 +35,10 @@ class MainController {
   play() {
     if (!this.playing) {
       this.playing = true;
-      const startTime = new Date();
+      this.startTime = new Date();
       const tick = () => {
         const now = new Date(),
-          delta = now - startTime;
+          delta = now - this.startTime;
         if (delta < 125 * this.numCol) {
           this.$window.requestAnimationFrame(tick);
         } else {
