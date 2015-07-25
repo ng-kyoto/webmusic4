@@ -30,6 +30,68 @@ class MainController {
     this.numCol = numCol;
     this.playing = false;
     this.grid = grid;
+
+    let lastTick = -1;
+    $scope.$on('tick', (e, tick) => {
+      const colIndex = (time) => Math.floor(time / 125),
+        i0 = colIndex(lastTick),
+        i = colIndex(tick);
+      if (i !== i0) {
+        const enter = [],
+          exit = [];
+        if (i === 0) {
+          const col = grid[i];
+          for (let j = 0; j < numRow; ++j) {
+            if (col[j].mask) {
+              enter.push(j);
+            }
+          }
+        } else if (i >= numCol) {
+          const col0 = grid[i - 1];
+          for (let j = 0; j < numRow; ++j) {
+            if (col0[j].mask) {
+              exit.push(j);
+            }
+          }
+        } else {
+          const col0 = grid[i - 1],
+            col = grid[i];
+          for (let j = 0; j < numRow; ++j) {
+            if (col[j].mask && !col0[j].mask) {
+              enter.push(j);
+            }
+            if (!col[j].mask && col0[j].mask) {
+              exit.push(j);
+            }
+          }
+        }
+
+        if (enter.length > 0) {
+          $scope.$broadcast('note-on', {
+            colIndex: i,
+            notes: enter.map((j) => {
+                return {
+                  rowIndex: j,
+                  velocity: Math.floor(Math.random() * 128),
+                  channel: Math.floor(Math.random() * 16)
+                };
+              })
+          });
+        }
+        if (exit.length > 0) {
+          $scope.$broadcast('note-off', {
+            colIndex: i,
+            notes: exit.map((j) => {
+                return {
+                  rowIndex: j
+                };
+              })
+          });
+        }
+
+      }
+      lastTick = tick;
+    });
   }
 
   play() {
