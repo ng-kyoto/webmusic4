@@ -15,22 +15,12 @@ const modName = 'app.directives.grid';
 class GridController {
   constructor($scope, numCol, numRow) {
     const boxWidth = 16,
-      boxHeight = 16,
-      matrix = new Array(numCol);
-
-    for (let i = 0; i < numCol; ++i) {
-      matrix[i] = new Array(numRow);
-      for (let j = 0; j < numRow; ++j) {
-        matrix[i][j] = {
-          mask: Math.random() < 0.1 ? 1 : 0
-        };
-      }
-    }
+      boxHeight = 16;
 
     const svg = d3.select('#grid');
     svg.select('.contents')
       .selectAll('g.col')
-      .data(matrix)
+      .data(this.grid)
       .enter()
       .append('g')
       .classed('col', true)
@@ -72,6 +62,9 @@ angular.module(modName, []).directive('grid', () => {
     restrict: 'E',
     template: template,
     scope: {
+    },
+    bindToController: {
+      grid: '='
     },
     controllerAs: 'grid',
     controller: GridController

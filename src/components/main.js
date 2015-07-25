@@ -17,7 +17,7 @@ const template = `
   </div>
 
   <visualizer style="position: absolute; left: 0; top: 0; right: 0; height: 500px;"></visualizer>
-  <grid style="position: absolute; left: 100px; top: 500px; right: 0; bottom: 0;"></grid>
+  <grid grid="main.grid" style="position: absolute; left: 100px; top: 500px; right: 0; bottom: 0;"></grid>
 </div>
 `;
 
@@ -27,6 +27,16 @@ class MainController {
     this.$interval = $interval;
     this.numRow = numRow;
     this.numCol = numCol;
+    this.grid = new Array(numCol);
+
+    for (let i = 0; i < numCol; ++i) {
+      this.grid[i] = new Array(numRow);
+      for (let j = 0; j < numRow; ++j) {
+        this.grid[i][j] = {
+          mask: Math.random() < 0.1 ? 1 : 0
+        };
+      }
+    }
   }
 
   play() {
