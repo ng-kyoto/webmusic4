@@ -1,4 +1,5 @@
 import angular from 'angular';
+import Converter from '../converter';
 
 const modName = 'app.services.midi';
 
@@ -6,6 +7,7 @@ class Midi {
   constructor() {
     this.init();
     this.inputs = [];
+    this.handler = null;
   }
 
   init() {
@@ -31,12 +33,19 @@ class Midi {
 
   onMIDIEvent(e) {
     const statusByte = e.data[0].toString(16).substring(0, 1);
+    const converter = new Converter('major');
     if (statusByte === "8") {
-      console.log("note off");
+      // interval = e.timeStamp - this.noteOnStamp;
+      // this.noteOnStamp = e.timeStamp;
     }
     if (statusByte === "9") {
-      console.log("note on");
+      converter.setNoteNumber(e.data[1]);
+      console.log(converter.toRowIndex());
     }
+  }
+
+  addHandler(callback) {
+    this.handler = callback;
   }
 }
 
