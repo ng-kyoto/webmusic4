@@ -2,29 +2,20 @@ import angular from 'angular';
 import d3 from 'd3';
 
 const template = `
-<div>
-  <div style="position: absolute; left: 10px; top: 10px;">
-    <md-button class="md-fab">
-      <md-icon>play_arrow</md-icon>
-    </md-button>
-  </div>
-  <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 10px;">
-    <svg id="chart" width="100%" height="100%">
-      <g class="contents" transform="translate(50,50)">
-      </g>
-    </svg>
-  </div>
+<div style="width: 100%; height: 100%">
+  <svg id="grid" width="100%" height="100%">
+    <g class="contents">
+    </g>
+  </svg>
 </div>
 `;
 
-const modName = 'app.components.chart';
+const modName = 'app.directives.grid';
 
-class ChartController {
-  constructor() {
+class GridController {
+  constructor($scope, numCol, numRow) {
     const boxWidth = 16,
       boxHeight = 16,
-      numCol = 64,
-      numRow = 40,
       matrix = new Array(numCol);
 
     for (let i = 0; i < numCol; ++i) {
@@ -36,7 +27,7 @@ class ChartController {
       }
     }
 
-    const svg = d3.select('#chart');
+    const svg = d3.select('#grid');
     svg.select('.contents')
       .selectAll('g.col')
       .data(matrix)
@@ -60,17 +51,31 @@ class ChartController {
         height: boxHeight - 2,
         transform: (_, j) => `translate(0,${boxHeight * j})`
       });
+
+    $scope.$on('tick', (e, time) => {
+      console.log(time);
+      const index = Math.floor(time / 125);
+      d3.selectAll('g.col')
+        .attr('opacity', 1)
+        .filter((_, i) => i === index)
+        .attr('opacity', 0.5);
+    });
+
+    $scope.$on('note-on', (e, data) => {
+      console.log(data);
+    });
   }
 }
 
-angular.module(modName, [])
-.controller('ChartController', ChartController)
-.config(($routeProvider) => {
-  $routeProvider.when('/chart', {
-    controller: 'ChartController',
-    controllerAs: 'chart',
-    template: template
-  });
+angular.module(modName, []).directive('grid', () => {
+  return {
+    restrict: 'E',
+    template: template,
+    scope: {
+    },
+    controllerAs: 'grid',
+    controller: GridController
+  };
 });
 
 export default modName;
