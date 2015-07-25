@@ -2,11 +2,18 @@ import angular from 'angular';
 import d3 from 'd3';
 
 const template = `
-<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 10px;">
-  <svg id="chart" width="100%" height="100%">
-    <g class="contents" transform="translate(50,50)">
-    </g>
-  </svg>
+<div>
+  <div style="position: absolute; left: 10px; top: 10px;">
+    <md-button class="md-fab">
+      <md-icon>play_arrow</md-icon>
+    </md-button>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 10px;">
+    <svg id="chart" width="100%" height="100%">
+      <g class="contents" transform="translate(50,50)">
+      </g>
+    </svg>
+  </div>
 </div>
 `;
 
