@@ -20,12 +20,13 @@ const template = `
 const modName = 'app.components.chart';
 
 class ChartController {
-  constructor() {
+  constructor(midi) {
     const boxWidth = 16,
       boxHeight = 16,
       numCol = 64,
       numRow = 40,
       matrix = new Array(numCol);
+    this.midi = midi;
 
     for (let i = 0; i < numCol; ++i) {
       matrix[i] = new Array(numRow);
@@ -34,6 +35,7 @@ class ChartController {
           mask: Math.random() < 0.1 ? 1 : 0
         };
       }
+      ChartController.$inject = ["midi"];
     }
 
     const svg = d3.select('#chart');
