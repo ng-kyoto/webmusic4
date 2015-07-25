@@ -143,6 +143,7 @@ class VisualizerController {
         console.log("off col"+colInd + "row:"+data.notes[i].rowIndex + "ch:" + data.notes[i].channel);
         let rowInd = data.notes[i].rowIndex;
         let pointNum = (colInd*40 + rowInd) % 180;
+        let ch = data.notes[i].channel;
         //console.log("p:"+pointNum);
         group.children[pointNum].material.color.r -= colors[ch].r;
         group.children[pointNum].material.color.g -= colors[ch].g;
