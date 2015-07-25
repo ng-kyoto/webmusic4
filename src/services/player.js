@@ -14,6 +14,15 @@ class Player {
   onMIDISuccess(midiAccess) {
     console.log('MIDI ready!');
     this.midi = midiAccess;
+
+    const outputIterator = this.midi.outputs.values();
+    const outputs = [];
+    for (var o = outputIterator.next(); !o.done; o = outputIterator.next()) {
+      outputs.push(o.value)
+    }
+
+    const output = outputs[0];
+    this.output = output;
   }
 
   onMIDIFailure(msg) {
@@ -21,21 +30,25 @@ class Player {
   }
 
   noteon(notes) {
-    console.log('noteon', notes);
     notes.forEach(note => {
       const nn = new Converter('major').setRowIndex(note.rowIndex).toNoteNumber();
       const noteon = 0x90;
       const channel = noteon + note.channel;
       const noteOnMessage = [channel, nn, note.velocity];
 
-      const output = this.midi.outputs.get(portID);
-      output.send(noteOnMessage);
+      this.output.send(noteOnMessage);
     });
-
   }
 
   noteoff(notes) {
-    console.log('noteoff', notes);
+    notes.forEach(note => {
+      const nn = new Converter('major').setRowIndex(note.rowIndex).toNoteNumber();
+      const noteoff = 0x80;
+      const channel = noteoff + note.channel;
+      const noteOffMessage = [channel, nn, note.velocity];
+
+      this.output.send(noteOffMessage);
+    });
   }
 }
 
