@@ -102,27 +102,32 @@ class VisualizerController {
 
     render();
 
+    let colors = [
+        {r:0.33, g:0, b:0},
+        {r:0, g:0.33, b:0},
+        {r:0, g:0, b:0.33},
+        {r:0.33, b:0.33, b:0.33}
+      ];
     $scope.$on('tick', (e, time) => {
       console.log(time);
       const index = Math.floor(time / 125);
     });
 
     $scope.$on('note-on', (e, data) => {
-      let colors = [
-        {r:0.33, g:0, b:0},
-        {r:0, g:0.33, b:0},
-        {r:0, g:0, b:0.33},
-        {r:0.33, b:0.33, b:0.33}
-      ];
-      console.log(data);
+      // light flash
+      //light.color.setHex( Math.random() * 0xffffff );
+      //light.position.x = Math.random() * 800 - 400;
+      //light.position.y = Math.random() * 800 - 400;
+      //light.position.z = Math.random() * 800 - 400;
+      //console.log(data);
 
       let colInd = data.colIndex;
       for (let i = 0; i < data.notes.length; ++i) {
+        console.log("on col"+colInd + "row:"+data.notes[i].rowIndex + "ch:" + data.notes[i].channel);
         let rowInd = data.notes[i].rowIndex;
         let pointNum = (colInd*40 + rowInd) % 180;
         let ch = data.notes[i].channel % 4;
-
-        console.log("p:"+pointNum);
+        //console.log("p:"+pointNum);
         group.children[pointNum].material.color.r += colors[ch].r;
         group.children[pointNum].material.color.g += colors[ch].g;
         group.children[pointNum].material.color.b += colors[ch].b;
@@ -132,15 +137,16 @@ class VisualizerController {
     });
 
     $scope.$on('note-off', (e, data) => {
-      console.log(data);
+      //console.log(data);
       let colInd = data.colIndex;
       for (let i = 0; i < data.notes.length; ++i) {
+        console.log("off col"+colInd + "row:"+data.notes[i].rowIndex + "ch:" + data.notes[i].channel);
         let rowInd = data.notes[i].rowIndex;
         let pointNum = (colInd*40 + rowInd) % 180;
-        console.log("p:"+pointNum);
-        group.children[pointNum].material.color.r = 0.2;
-        group.children[pointNum].material.color.g = 0.2;
-        group.children[pointNum].material.color.b = 0.2;
+        //console.log("p:"+pointNum);
+        group.children[pointNum].material.color.r -= colors[ch].r;
+        group.children[pointNum].material.color.g -= colors[ch].g;
+        group.children[pointNum].material.color.b -= colors[ch].b;
       }
     });
   }
