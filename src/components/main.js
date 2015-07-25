@@ -23,13 +23,23 @@ const template = `
 `;
 
 class MainController {
-  constructor($scope, $window, numRow, numCol, grid) {
+  constructor($scope, $window, midi, numRow, numCol, grid) {
     this.$scope = $scope;
     this.$window = $window;
     this.numRow = numRow;
     this.numCol = numCol;
     this.playing = false;
     this.grid = grid;
+
+    let colOffset = 0;
+    midi.addHandler(({rowIndex, velocity, channel}) => {
+      console.log(colOffset, rowIndex, grid[colOffset][rowIndex]);
+      grid[colOffset][rowIndex].mask = !grid[colOffset][rowIndex].mask;
+      grid[colOffset][rowIndex].channel = channel;
+      grid[colOffset][rowIndex].velocity = velocity;
+      grid.$save(colOffset);
+      $scope.$broadcast('grid-update');
+    });
 
     let lastTick = -1;
     $scope.$on('tick', (e, tick) => {

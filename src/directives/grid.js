@@ -78,6 +78,11 @@ class GridController {
       this.svg.select('g.cursor')
         .attr('transform', `translate(${xScale(time)},0)`);
     });
+
+    $scope.$on('grid-update', () => {
+      this.svg.selectAll('g.cell rect')
+        .attr('fill', (d) => d.mask ? '#000' : '#ccc');
+    });
   }
 }
 
