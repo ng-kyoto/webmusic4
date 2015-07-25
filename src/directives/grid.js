@@ -13,11 +13,9 @@ const template = `
 const modName = 'app.directives.grid';
 
 class GridController {
-  constructor() {
+  constructor($scope, numCol, numRow) {
     const boxWidth = 16,
       boxHeight = 16,
-      numCol = 64,
-      numRow = 40,
       matrix = new Array(numCol);
 
     for (let i = 0; i < numCol; ++i) {
@@ -53,6 +51,19 @@ class GridController {
         height: boxHeight - 2,
         transform: (_, j) => `translate(0,${boxHeight * j})`
       });
+
+    $scope.$on('tick', (e, time) => {
+      console.log(time);
+      const index = Math.floor(time / 125);
+      d3.selectAll('g.col')
+        .attr('opacity', 1)
+        .filter((_, i) => i === index)
+        .attr('opacity', 0.5);
+    });
+
+    $scope.$on('note-on', (e, data) => {
+      console.log(data);
+    });
   }
 }
 

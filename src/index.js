@@ -10,3 +10,7 @@ angular.module('app', [route, material, firebase, components, directives]);
 angular.module('app').config(($routeProvider) => {
   $routeProvider.otherwise('/');
 });
+
+angular.module('app')
+.constant('numCol', 64)
+.constant('numRow', 40);
