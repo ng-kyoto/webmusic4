@@ -15,6 +15,12 @@ const template = `
     <md-button class="md-fab" ng-click="main.noteoff()">
       <md-icon>remove</md-icon>
     </md-button>
+    <md-button class="md-fab" ng-click="main.setScale('major')">
+      <p>1</p>
+    </md-button>
+    <md-button class="md-fab" ng-click="main.setScale('blues')">
+      <p>2</p>
+    </md-button>
   </div>
 
   <visualizer style="position: absolute; left: 0; top: 0; right: 0; height: 500px;"></visualizer>
@@ -125,6 +131,10 @@ class MainController {
       this.$scope.$broadcast('tick', delta);
     };
     tick();
+  }
+
+  setScale(scale) {
+    this.Player.setScale(scale);
   }
 
   noteon() {

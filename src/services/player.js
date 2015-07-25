@@ -11,6 +11,10 @@ class Player {
     );
   }
 
+  setScale(scale) {
+    this.scale = scale;
+  }
+
   onMIDISuccess(midiAccess) {
     console.log('MIDI ready!');
     this.midi = midiAccess;
@@ -31,7 +35,7 @@ class Player {
 
   noteon(notes) {
     notes.forEach(note => {
-      const nn = new Converter('major').setRowIndex(note.rowIndex).toNoteNumber();
+      const nn = new Converter(this.scale).setRowIndex(note.rowIndex).toNoteNumber();
       const noteon = 0x90;
       const channel = noteon + note.channel;
       const noteOnMessage = [channel, nn, note.velocity];
@@ -42,7 +46,7 @@ class Player {
 
   noteoff(notes) {
     notes.forEach(note => {
-      const nn = new Converter('major').setRowIndex(note.rowIndex).toNoteNumber();
+      const nn = new Converter(this.scale).setRowIndex(note.rowIndex).toNoteNumber();
       const noteoff = 0x80;
       const channel = noteoff + note.channel;
       const noteOffMessage = [channel, nn, note.velocity];
