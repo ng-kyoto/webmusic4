@@ -23,13 +23,14 @@ const template = `
 `;
 
 class MainController {
-  constructor($scope, $window, midi, numRow, numCol, grid) {
+  constructor($scope, $window, midi, numRow, numCol, grid, Player) {
     this.$scope = $scope;
     this.$window = $window;
     this.numRow = numRow;
     this.numCol = numCol;
     this.playing = false;
     this.grid = grid;
+    this.Player = Player;
 
     let colOffset = 0;
     midi.addHandler(({rowIndex, velocity, channel}) => {
@@ -103,6 +104,18 @@ class MainController {
       }
       lastTick = tick;
     });
+
+    this.addEventListener();
+  }
+
+  addEventListener() {
+    this.$scope.$on('note-on', (ev, arg) => {
+      this.Player.noteon(arg.notes);
+    })
+
+    this.$scope.$on('note-off', (ev, arg) => {
+      this.Player.noteoff(arg.notes);
+    })
   }
 
   togglePlay() {
@@ -135,6 +148,9 @@ class MainController {
         });
       }
     }
+
+    console.log('noteon');
+    this.Player.noteon(data);
     this.$scope.$broadcast('note-on', {
       colIndex: Math.floor(Math.random() * 64),
       notes: data
@@ -152,6 +168,8 @@ class MainController {
         });
       }
     }
+
+    this.Player.noteoff(data);
     this.$scope.$broadcast('note-off', {
       colIndex: Math.floor(Math.random() * 64),
       notes: data
