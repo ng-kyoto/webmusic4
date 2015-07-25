@@ -36,19 +36,19 @@ const initGL = ($window) => {
 
   // columns
   const numCol = 64;
+  const numRow = 40;
   const group = new THREE.Group();
-  for (var ii = 0; ii < numCol; ++ii) {
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = 1 * ii;
-    mesh.position.x = -1;
-    mesh.position.z = -5;
-    group.add(mesh);
+
+  for (var ii = 0; ii < numRow; ++ii) {
+    for (var jj = 0; jj < numCol; ++jj) {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.y = 1 * jj - 50;
+      mesh.position.x = -20 + 1 * ii ;
+      mesh.position.z = -5;
+      group.add(mesh);
+    }
   }
   scene.add(group);
-  //const groupColumns[] = new Array[numColumns];
-  /*for (const i = 0; i < numColumns; ++i) {
-    groupColumns[i] = new THREE.Group();
-  }*/
 
   //scene.add(cube);
   scene.add(light);
@@ -65,6 +65,11 @@ const initGL = ($window) => {
     light.position.x = Math.random() * 800 - 400;
     light.position.y = Math.random() * 800 - 400;
     light.position.z = Math.random() * 800 - 400;
+
+    for (var ii = 0; ii < group.children.length; ++ii) {
+      //group.add(mesh);
+      group.children[0].position.x = Math.random();
+    } 
 
     renderer.render(scene, camera);
   };
