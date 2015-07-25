@@ -8,11 +8,13 @@ class Midi {
     this.init();
     this.inputs = [];
     this.handler = null;
+    this.status = {};
   }
 
   init() {
     navigator.requestMIDIAccess()
       .then(this.onMIDISuccess.bind(this), this.onMIDIFailure.bind(this));
+    this.addHandler.bind(this);
   }
 
   onMIDISuccess(access) {
@@ -32,20 +34,29 @@ class Midi {
   }
 
   onMIDIEvent(e) {
-    const statusByte = e.data[0].toString(16).substring(0, 1);
     const converter = new Converter('major');
+    const statusByte = e.data[0].toString(16).substring(0, 1);
+    let interval = 0;
+
     if (statusByte === "8") {
-      // interval = e.timeStamp - this.noteOnStamp;
-      // this.noteOnStamp = e.timeStamp;
+      interval = e.timeStamp - this.noteOnStamp;
+      this.noteOnStamp = null;
+      if (interval < 1000) {
+        converter.setNoteNumber(e.data[1]);
+        this.status = {
+          channel: Number(e.data[0].toString(16).substring(1)),
+          velocity: e.data[2],
+          rowIndex: converter.toRowIndex()
+        };
+      }
     }
     if (statusByte === "9") {
-      converter.setNoteNumber(e.data[1]);
-      console.log(converter.toRowIndex());
+      this.noteOnStamp = e.timeStamp;
     }
   }
 
   addHandler(callback) {
-    this.handler = callback;
+    this.handler = callback(this.status);
   }
 }
 
