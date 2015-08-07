@@ -21,8 +21,10 @@ class Midi {
   onMIDISuccess(access) {
     this.inputs = [];
     for (const device of access.inputs.values()) {
-      device.onmidimessage = this.onMIDIEvent.bind(this);
-      this.inputs.push(device);
+      if (!device.name.startsWith('IAC')) {
+        device.onmidimessage = this.onMIDIEvent.bind(this);
+        this.inputs.push(device);
+      }
     }
   }
 
@@ -36,7 +38,7 @@ class Midi {
     const statusByte = +e.data[0].toString(16).substring(0, 1);
     let interval = 0;
 
-    console.log(statusByte, interval);
+    console.log(e, statusByte, interval);
     if (statusByte === 8) {
       interval = e.timeStamp - this.noteOnStamp;
       this.noteOnStamp = null;
