@@ -12,10 +12,10 @@ const template = `
       <md-icon>clear</md-icon>
     </md-button>
     <md-button class="md-fab" ng-click="main.setScale('major')">
-      <p>1</p>
+      <md-icon>filter_1</md-icon>
     </md-button>
     <md-button class="md-fab" ng-click="main.setScale('blues')">
-      <p>2</p>
+      <md-icon>filter_2</md-icon>
     </md-button>
   </div>
 
