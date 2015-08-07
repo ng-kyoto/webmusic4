@@ -42,9 +42,13 @@ var Converter = (function () {
       var scaleArray = this.scaleArray();
       var pitchNumber = this.allPitch()[this.noteName()];
 
-      var additionalIdx = scaleArray.findIndex(function (v, i) {
+      var additionalIdx = scaleArray.findIndex(function (v) {
         return pitchNumber <= v;
       });
+
+      if (5 <= pitchNumber) {
+        additionalIdx -= 7;
+      }
 
       // console.log(this.noteNameWithOctave(), pitchNumber, 'additionalIdx', additionalIdx);
 
