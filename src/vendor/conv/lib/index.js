@@ -39,6 +39,10 @@ var Converter = (function () {
   }, {
     key: 'toRowIndex',
     value: function toRowIndex() {
+      if (this.nn <= 30) {
+        return null;
+      }
+
       var scaleArray = this.scaleArray();
       var pitchNumber = this.allPitch()[this.noteName()];
 
