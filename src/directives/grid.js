@@ -1,5 +1,6 @@
 import angular from 'angular';
 import d3 from 'd3';
+import toMatrix from '../utils/to-matrix';
 
 const template = `
 <div style="width: 100%; height: 100%">
@@ -24,7 +25,7 @@ class GridController {
     const svg = d3.select('#grid'),
       contents = svg.select('.contents');
     contents.selectAll('g.col')
-      .data(this.grid)
+      .data(toMatrix(this.grid, numCol, numRow))
       .enter()
       .append('g')
       .classed('col', true)
@@ -38,7 +39,7 @@ class GridController {
       .classed('cell', true)
       .append('rect')
       .attr({
-        fill: (d) => d.mask ? '#000' : '#ccc',
+        fill: (d) => d.empty ? '#ccc' : '#000',
         x: 1,
         y: 1,
         width: boxWidth - 2,
@@ -81,9 +82,10 @@ class GridController {
 
     $scope.$on('grid-update', () => {
       console.log('grid-update');
+      const matrix = toMatrix(this.grid, numCol, numRow);
       this.svg.selectAll('g.cell rect')
-        .attr('fill', (d) => {
-          return d.mask ? '#000' : '#ccc';
+        .attr('fill', ({row, col}) => {
+          return matrix[col][row].empty ? '#ccc' : '#000';
         });
     });
   }
