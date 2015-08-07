@@ -61,14 +61,14 @@ class MainController {
         if (i === 0) {
           const col = matrix[i];
           for (let j = 0; j < numRow; ++j) {
-            if (col[j].mask) {
+            if (!col[j].empty) {
               enter.push(j);
             }
           }
         } else if (i >= numCol) {
           const col0 = matrix[i - 1];
           for (let j = 0; j < numRow; ++j) {
-            if (col0[j].mask) {
+            if (!col0[j].empty) {
               exit.push(j);
             }
           }
@@ -76,10 +76,10 @@ class MainController {
           const col0 = matrix[i - 1],
             col = matrix[i];
           for (let j = 0; j < numRow; ++j) {
-            if (col[j].mask && !col0[j].mask) {
+            if (!col[j].empty && col0[j].empty) {
               enter.push(j);
             }
-            if (!col[j].mask && col0[j].mask) {
+            if (col[j].empty && !col0[j].empty) {
               exit.push(j);
             }
           }
