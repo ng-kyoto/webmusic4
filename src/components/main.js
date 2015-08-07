@@ -7,6 +7,9 @@ const template = `
     <md-button class="md-fab" ng-click="main.togglePlay()">
       <md-icon>play_arrow</md-icon>
     </md-button>
+    <md-button class="md-fab" ng-click="main.clearNotes()">
+      <md-icon>clear</md-icon>
+    </md-button>
     <md-button class="md-fab" ng-click="main.setScale('major')">
       <p>1</p>
     </md-button>
@@ -35,7 +38,8 @@ class MainController {
       grid[colOffset][rowIndex].mask = !grid[colOffset][rowIndex].mask;
       grid[colOffset][rowIndex].channel = channel;
       grid[colOffset][rowIndex].velocity = velocity;
-      grid.$save(colOffset++);
+      grid.$save(colOffset);
+      colOffset = (colOffset + 1) % numCol;
       $scope.$broadcast('grid-update');
     });
 
@@ -138,47 +142,18 @@ class MainController {
     tick();
   }
 
+  clearNotes() {
+    for (let i = 0; i < this.grid.length; ++i) {
+      const col = this.grid[i];
+      for (const cell of col) {
+        cell.mask = false;
+      }
+      this.grid.$save(i);
+    }
+  }
+
   setScale(scale) {
     this.Player.setScale(scale);
-  }
-
-  noteon() {
-    const data = [];
-    for (let i = 0; i < this.numRow; ++i) {
-      if (Math.random() < 0.1) {
-        data.push({
-          rowIndex: i,
-          velocity: Math.floor(Math.random() * 128),
-          channel: Math.floor(Math.random() * 16)
-        });
-      }
-    }
-
-    console.log('noteon');
-    this.Player.noteon(data);
-    this.$scope.$broadcast('note-on', {
-      colIndex: Math.floor(Math.random() * 64),
-      notes: data
-    });
-  }
-
-  noteoff() {
-    const data = [];
-    for (let i = 0; i < this.numRow; ++i) {
-      if (Math.random() < 0.1) {
-        data.push({
-          rowIndex: i,
-          velocity: Math.floor(Math.random() * 128),
-          channel: Math.floor(Math.random() * 16)
-        });
-      }
-    }
-
-    this.Player.noteoff(data);
-    this.$scope.$broadcast('note-off', {
-      colIndex: Math.floor(Math.random() * 64),
-      notes: data
-    });
   }
 }
 

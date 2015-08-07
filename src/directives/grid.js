@@ -43,7 +43,7 @@ class GridController {
         y: 1,
         width: boxWidth - 2,
         height: boxHeight - 2,
-        transform: (_, j) => `translate(0,${boxHeight * j})`
+        transform: (_, j) => `translate(0,${boxHeight * (numRow - j - 1)})`
       });
 
     const drag = d3.behavior.drag()
@@ -80,7 +80,7 @@ class GridController {
     });
 
     $scope.$on('grid-update', () => {
-      console.log('hoge');
+      console.log('grid-update');
       this.svg.selectAll('g.cell rect')
         .attr('fill', (d) => {
           return d.mask ? '#000' : '#ccc';

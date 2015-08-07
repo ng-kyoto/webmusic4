@@ -1,3 +1,4 @@
+/* global navigator */
 import angular from 'angular';
 import Converter from '../vendor/conv';
 
@@ -18,18 +19,15 @@ class Midi {
   }
 
   onMIDISuccess(access) {
-    const input = access.inputs.values();
-
-    for (var o = input.next(); !o.done; o = input.next()) {
-      this.inputs.push(o.value);
-    }
-    for (var cnt = 0; cnt < this.inputs.length; cnt++) {
-      this.inputs[cnt].onmidimessage = this.onMIDIEvent.bind(this);
+    this.inputs = [];
+    for (const device of access.inputs.values()) {
+      device.onmidimessage = this.onMIDIEvent.bind(this);
+      this.inputs.push(device);
     }
   }
 
   onMIDIFailure(msg) {
-    console.log("oh... midi failed");
+    console.log('oh... midi failed');
     console.log(msg);
   }
 
