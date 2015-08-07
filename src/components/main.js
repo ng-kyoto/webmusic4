@@ -1,5 +1,6 @@
 import angular from 'angular';
 import Firebase from 'firebase';
+import toMatrix from '../utils/to-matrix';
 
 const template = `
 <div>
@@ -35,12 +36,13 @@ class MainController {
 
     let colOffset = 0;
     midi.addHandler(({rowIndex, velocity, channel}) => {
-      grid[colOffset][rowIndex].mask = !grid[colOffset][rowIndex].mask;
-      grid[colOffset][rowIndex].channel = channel;
-      grid[colOffset][rowIndex].velocity = velocity;
-      grid.$save(colOffset);
+      grid.$add({
+        channel,
+        col: colOffset,
+        row: rowIndex,
+        velocity
+      });
       colOffset = (colOffset + 1) % numCol;
-      $scope.$broadcast('grid-update');
     });
 
     grid.$watch(() => {
@@ -52,26 +54,27 @@ class MainController {
       const colIndex = (time) => Math.floor(time / 125),
         i0 = colIndex(lastTick),
         i = colIndex(tick);
+      const matrix = toMatrix(grid, numCol, numRow);
       if (i !== i0) {
         const enter = [],
           exit = [];
         if (i === 0) {
-          const col = grid[i];
+          const col = matrix[i];
           for (let j = 0; j < numRow; ++j) {
             if (col[j].mask) {
               enter.push(j);
             }
           }
         } else if (i >= numCol) {
-          const col0 = grid[i - 1];
+          const col0 = matrix[i - 1];
           for (let j = 0; j < numRow; ++j) {
             if (col0[j].mask) {
               exit.push(j);
             }
           }
         } else {
-          const col0 = grid[i - 1],
-            col = grid[i];
+          const col0 = matrix[i - 1],
+            col = matrix[i];
           for (let j = 0; j < numRow; ++j) {
             if (col[j].mask && !col0[j].mask) {
               enter.push(j);
@@ -89,7 +92,7 @@ class MainController {
                 return {
                   rowIndex: j,
                   velocity: Math.floor(Math.random() * 128),
-                  channel: grid[i][j].channel
+                  channel: matrix[i][j].channel
                 };
               })
           });
@@ -100,12 +103,11 @@ class MainController {
             notes: exit.map((j) => {
                 return {
                   rowIndex: j,
-                  channel: grid[i - 1][j].channel
+                  channel: matrix[i - 1][j].channel
                 };
               })
           });
         }
-
       }
       lastTick = tick;
     });
@@ -143,12 +145,8 @@ class MainController {
   }
 
   clearNotes() {
-    for (let i = 0; i < this.grid.length; ++i) {
-      const col = this.grid[i];
-      for (const cell of col) {
-        cell.mask = false;
-      }
-      this.grid.$save(i);
+    for (let i = this.grid.length; i >= 0; --i) {
+      this.grid.$remove(i);
     }
   }
 
@@ -168,7 +166,7 @@ angular.module(modName, [])
     controllerAs: 'main',
     resolve: {
       grid: ($firebaseArray) => {
-        const ref = new Firebase('https://ngkyoto-wm4.firebaseio.com/hoge');
+        const ref = new Firebase('https://ngkyoto-wm4.firebaseio.com/unko');
         return $firebaseArray(ref).$loaded();
       }
     }
